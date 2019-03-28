@@ -123,12 +123,7 @@ class LocalMemoryDecoder(nn.Module):
         self.embedding_dim = embedding_dim
         self.dropout = dropout
         self.dropout_layer = nn.Dropout(dropout) 
-        # for hop in range(self.max_hops+1):
-        #     C = nn.Embedding(self.num_vocab, embedding_dim, padding_idx=PAD_token)
-        #     C.weight.data.normal_(0, 0.1)
-        #     self.add_module("C_{}".format(hop), C)
-        self.C = shared_emb #nn.Embedding(self.num_vocab, embedding_dim, padding_idx=PAD_token)
-        # self.C.weight.data.normal_(0, 0.1)
+        self.C = shared_emb 
         self.softmax = nn.Softmax(dim=1)
         self.sketch_rnn = nn.GRU(embedding_dim, embedding_dim, dropout=dropout)
         self.relu = nn.ReLU()
@@ -136,7 +131,7 @@ class LocalMemoryDecoder(nn.Module):
         self.conv_layer = nn.Conv1d(embedding_dim, embedding_dim, 5, padding=2)
         self.softmax = nn.Softmax(dim = 1)
 
-    def forward(self, extKnow, story_size, story_lengths, copy_list, encode_hidden, target_batches, max_target_length, batch_size, use_teacher_forcing, get_decoded_words, global_pointer,seqs):
+    def forward(self, extKnow, story_size, story_lengths, copy_list, encode_hidden, target_batches, max_target_length, batch_size, use_teacher_forcing, get_decoded_words, global_pointer):
         # Initialize variables for vocab and pointer
         all_decoder_outputs_vocab = _cuda(torch.zeros(max_target_length, batch_size, self.num_vocab))
         all_decoder_outputs_ptr = _cuda(torch.zeros(max_target_length, batch_size, story_size[1]))
@@ -153,12 +148,9 @@ class LocalMemoryDecoder(nn.Module):
             _, hidden = self.sketch_rnn(embed_q.unsqueeze(0), hidden)
             query_vector = hidden[0] 
             
-            if len(seqs)==0:
-                p_vocab = self.attend_vocab(self.C.weight, hidden.squeeze(0))
-                all_decoder_outputs_vocab[t] = p_vocab
-                _, topvi = p_vocab.data.topk(1)
-            else:
-                topvi = _cuda(torch.tensor([s.output[t] if t<len(s.output) else EOS_token for s in seqs]))
+            p_vocab = self.attend_vocab(self.C.weight, hidden.squeeze(0))
+            all_decoder_outputs_vocab[t] = p_vocab
+            _, topvi = p_vocab.data.topk(1)
             
             # query the external konwledge using the hidden state of sketch RNN
             prob_soft, prob_logits = extKnow(query_vector, global_pointer)
@@ -203,175 +195,6 @@ class LocalMemoryDecoder(nn.Module):
         # scores = F.softmax(scores_, dim=1)
         return scores_
 
-    def decode_step(self, input_token, state, beam_size):
-        # print("input_token", input_token.size())
-        # print("state", state.size())
-        embed_q = self.C(input_token)
-        _, new_state = self.sketch_rnn(embed_q.unsqueeze(0), state)
-        p_vocab = self.attend_vocab(self.C.weight, new_state.squeeze(0))
-        log_p_vocab = F.log_softmax(p_vocab, dim=1)
-        logprobs, words = log_p_vocab.data.topk(beam_size)
-        new_states_list = [new_state[0][i] for i in range(new_state.size(1))]
-        return words, logprobs, new_states_list
-
-    def beam_search(self, max_target_length, batch_size, encoded_hidden, beam_size, length_normalization_factor=0.1, length_normalization_const=5):
-        """
-        Runs beam search sequence generation on a single image.
-        """
-        init_state = self.relu(self.projector(encoded_hidden)).unsqueeze(0)
-        initial_input = _cuda(torch.LongTensor([SOS_token] * batch_size))
-        partial_sequences = [TopN(beam_size) for _ in range(batch_size)]
-        complete_sequences = [TopN(beam_size) for _ in range(batch_size)]
-
-        words, logprobs, new_state = self.decode_step(
-            initial_input, 
-            init_state,
-            beam_size)
-        
-        # Create first beam_size candidate hypotheses for each entry in batch
-        for b in range(batch_size):
-            for k in range(beam_size):
-                seq = Sequence(
-                    output=[initial_input[b].item()] + [words[b][k].item()],
-                    state=new_state[b],
-                    logprob=logprobs[b][k],
-                    score=logprobs[b][k])
-                partial_sequences[b].push(seq)
-
-        # Run beam search.
-        for _ in range(max_target_length - 1):
-            partial_sequences_list = [p.extract() for p in partial_sequences]
-            for p in partial_sequences:
-                p.reset()
-
-            # Keep a flattened list of parial hypotheses, to easily feed through a model as whole batch
-            flattened_partial = [s for sub_partial in partial_sequences_list for s in sub_partial]
-
-            input_feed = _cuda(torch.tensor([c.output[-1] for c in flattened_partial]))
-            state_feed = _cuda(torch.stack([c.state for c in flattened_partial])).unsqueeze(0)
-            if len(input_feed) == 0:
-                # We have run out of partial candidates; happens when beam_size=1
-                break
-
-            # Feed current hypotheses through the model, and recieve new outputs and states logprobs are needed to rank hypotheses
-            words, logprobs, new_states = self.decode_step(
-                    input_feed, 
-                    state_feed,
-                    beam_size + 1)
-
-            idx = 0
-            for b in range(batch_size):
-                # For every entry in batch, find and trim to the most likely beam_size hypotheses
-                for partial in partial_sequences_list[b]:
-                    state = new_states[idx]
-                    k = 0
-                    num_hyp = 0
-
-                    while num_hyp < beam_size:
-                        w = words[idx][k]
-                        output = partial.output + [w.item()]
-                        logprob = partial.logprob + logprobs[idx][k]
-                        score = logprob
-                        k += 1
-                        num_hyp += 1
-
-                        if w.item() == EOS_token:
-                            if length_normalization_factor > 0:
-                                L = length_normalization_const
-                                length_penalty = (L + len(output)) / (L + 1)
-                                score /= length_penalty ** length_normalization_factor
-                            beam = Sequence(output, state, logprob, score)#, attention)
-                            complete_sequences[b].push(beam)
-                            num_hyp -= 1  # we can fit another hypotheses as this one is over
-                        else:
-                            beam = Sequence(output, state, logprob, score)#, attention)
-                            partial_sequences[b].push(beam)
-                    idx += 1
-
-        for b in range(batch_size):
-            if not complete_sequences[b].size():
-                complete_sequences[b] = partial_sequences[b]
-        seqs = [complete.extract(sort=True)[0] for complete in complete_sequences]
-
-        return seqs
-
-
-import heapq
-class TopN(object):
-    """Maintains the top n elements of an incrementally provided set."""
-
-    def __init__(self, n):
-        self._n = n
-        self._data = []
-
-    def size(self):
-        assert self._data is not None
-        return len(self._data)
-
-    def push(self, x):
-        """Pushes a new element."""
-        assert self._data is not None
-        if len(self._data) < self._n:
-            heapq.heappush(self._data, x)
-        else:
-            heapq.heappushpop(self._data, x)
-
-    def extract(self, sort=False):
-        """Extracts all elements from the TopN. This is a destructive operation.
-        The only method that can be called immediately after extract() is reset().
-        Args:
-          sort: Whether to return the elements in descending sorted order.
-        Returns:
-          A list of data; the top n elements provided to the set.
-        """
-        assert self._data is not None
-        data = self._data
-        self._data = None
-        if sort:
-            data.sort(reverse=True)
-        return data
-
-    def reset(self):
-        """Returns the TopN to an empty state."""
-        self._data = []
-
-
-class Sequence(object):
-    """Represents a complete or partial sequence."""
-
-    def __init__(self, output, state, logprob, score, attention=None):
-        """Initializes the Sequence.
-        Args:
-          output: List of word ids in the sequence.
-          state: Model state after generating the previous word.
-          logprob: Log-probability of the sequence.
-          score: Score of the sequence.
-        """
-        self.output = output
-        self.state = state
-        self.logprob = logprob
-        self.score = score
-        self.attention = attention
-
-    def __cmp__(self, other):
-        """Compares Sequences by score."""
-        assert isinstance(other, Sequence)
-        if self.score == other.score:
-            return 0
-        elif self.score < other.score:
-            return -1
-        else:
-            return 1
-
-    # For Python 3 compatibility (__cmp__ is deprecated).
-    def __lt__(self, other):
-        assert isinstance(other, Sequence)
-        return self.score < other.score
-
-    # Also for Python 3 compatibility.
-    def __eq__(self, other):
-        assert isinstance(other, Sequence)
-        return self.score == other.score
 
 
 class AttrProxy(object):

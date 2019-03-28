@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from torch import optim
 import torch.nn.functional as F
@@ -157,11 +156,6 @@ class GLMP(nn.Module):
         for elm in data['context_arr_plain']:
             elm_temp = [ word_arr[0] for word_arr in elm ]
             self.copy_list.append(elm_temp) 
-            
-        if args["beam_search"]:
-            seqs = self.decoder.beam_search(max_target_length, batch_size, encoded_hidden, beam_size=args["beam_search"])
-        else:
-            seqs = []
         
         outputs_vocab, outputs_ptr, decoded_fine, decoded_coarse = self.decoder.forward(
             self.extKnow, 
@@ -174,8 +168,7 @@ class GLMP(nn.Module):
             batch_size, 
             use_teacher_forcing, 
             get_decoded_words, 
-            global_pointer, 
-            seqs) 
+            global_pointer) 
 
         return outputs_vocab, outputs_ptr, decoded_fine, decoded_coarse, global_pointer
 
