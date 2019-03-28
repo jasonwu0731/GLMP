@@ -24,11 +24,11 @@ Under the utils folder, we have the script to import and batch the data for each
 We created `myTrain.py` to train models. You can run:
 GLMP bAbI dialogue t1-5:
 ```console
-❱❱❱ python3 myTrain.py -lr=0.001 -l=1 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=babi -t=1 
+❱❱❱ python3 myTrain.py -lr=0.001 -l=3 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=babi -t=1 
 ```
 or GLMP SMD
 ```console
-❱❱❱ python3 myTrain.py -lr=0.001 -l=1 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=kvr -t=
+❱❱❱ python3 myTrain.py -lr=0.001 -l=3 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=kvr -t=
 ```
 
 While training, the model with the best validation is saved. If you want to reuse a model add `-path=path_name_model` to the function call. The model is evaluated by using per responce accuracy, WER, F1 and BLEU.
