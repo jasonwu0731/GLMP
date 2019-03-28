@@ -1,9 +1,7 @@
 # GLMP
 **Global-to-local Memory Pointer Networks for Task-Oriented Dialogue**. Chien-Sheng Wu, Richard Socher, Caiming Xiong. ***ICLR 2019***. [[PDF]](https://arxiv.org/abs/1901.04713). 
 
-This code has been written using PyTorch >= 0.4.
-
-If you use any source codes or datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
+This code has been written using PyTorch >= 0.4. If you use any source codes or datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
 <pre>
 @article{wu2019global,
   title={Global-to-local Memory Pointer Networks for Task-Oriented Dialogue},
@@ -28,7 +26,7 @@ GLMP bAbI dialogue t1-5:
 ```console
 ❱❱❱ python3 myTrain.py -lr=0.001 -l=1 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=babi -t=1 
 ```
-or GLMP Stanford Multi-domain Dialogue
+or GLMP SMD
 ```console
 ❱❱❱ python3 myTrain.py -lr=0.001 -l=1 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=kvr -t=
 ```
@@ -49,13 +47,13 @@ or GLMP SMD
 ## Visualization Memory Access
 
 <p align="center">
-<img src="img/VIZ.png" width="50%" />
+<img src="img/VIZ.png" width="100%" />
 </p>
 
 ## Architecture
 <p align="center">
-<img src="img/new_enc.png" width="75%" />
-<img src="img/new_dec.png" width="75%" />
+<img src="img/new_enc.png" width="50%" />
+<img src="img/new_dec.png" width="50%" />
 </p>
 
 ## Enjoy! :)
