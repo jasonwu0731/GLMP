@@ -1,0 +1,10 @@
+1 hello	hello what can i help you with today 
+2 may i have a table in paris	i'm on it 
+3 <silence>	any preference on a type of cuisine 
+4 i love french food	how many people would be in your party 
+5 six people	which price range are looking for 
+6 in a cheap price range please	ok let me look into some options for you 
+7 <silence>	api_call french paris six cheap 
+8 instead could it be with moderate price	sure is there anything else to update 
+9 no	ok let me look into some options for you 
+10 <silence>	api_call moderate paris six cheap 
