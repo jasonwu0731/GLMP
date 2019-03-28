@@ -1,21 +1,34 @@
-# GLMP
-**Global-to-local Memory Pointer Networks for Task-Oriented Dialogue**. Chien-Sheng Wu, Richard Socher, Caiming Xiong. ***ICLR 2019***. [[PDF]](https://arxiv.org/abs/1901.04713). 
+## Global-to-local Memory Pointer Networks for Task-Oriented Dialogue
+<img src="img/pytorch-logo-dark.png" width="10%"> [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+
+This is the PyTorch implementation of the paper:
+**Global-to-local Memory Pointer Networks for Task-Oriented Dialogue**. [**Chien-Sheng Wu**](https://jasonwu0731.github.io/), [Richard Socher](https://www.socher.org/), [Caiming Xiong](http://www.stat.ucla.edu/~caiming/). ***ICLR 2019***. 
+[[PDF]](https://arxiv.org/abs/1901.04713). [[Open Reivew]](https://openreview.net/forum?id=ryxnHhRqFm)
+
+<img align="right" src="img/einstein-scroll.png" width="5%">
+<img align="right" src="img/salesforce-research.jpg" width="12%">
+
 
 This code has been written using PyTorch >= 0.4. If you use any source codes or datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
 <pre>
 @article{wu2019global,
   title={Global-to-local Memory Pointer Networks for Task-Oriented Dialogue},
   author={Wu, Chien-Sheng and Socher, Richard and Xiong, Caiming},
-  journal={Proceedings of the 7th International Conference on Learning Representations},
+  booktitle={Proceedings of the International Conference on Learning Representations (ICLR)},
   year={2019}
 }
 </pre>
 
-## Block Diagram
+<p align="center">
+<img src="img/example.png" width="100%" />
+</p>
+
+## Abstract
+End-to-end task-oriented dialogue is challenging since knowledge bases are usually large, dynamic and hard to incorporate into a learning framework. We propose the global-to-local memory pointer (GLMP) networks to address this issue. In our model, a global memory encoder and a local memory decoder are proposed to share external knowledge. The encoder encodes dialogue history, modifies global contextual representation, and generates a global memory pointer. The decoder first generates a sketch response with unfilled slots. Next, it passes the global memory pointer to filter the external knowledge for relevant information, then instantiates the slots via the local memory pointers. We empirically show that our model can improve copy accuracy and mitigate the common out-of-vocabulary problem. As a result, GLMP is able to improve over the previous state-of-theart models in both simulated bAbI Dialogue dataset and human-human Stanford Multi-domain Dialogue dataset on automatic and human evaluation.
+
 <p align="center">
 <img src="img/new_block2.png" width="75%" />
 </p>
-
 
 ## Import data
 Under the utils folder, we have the script to import and batch the data for each dataset. 
