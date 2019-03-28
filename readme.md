@@ -11,7 +11,7 @@ This is the PyTorch implementation of the paper:
 
 This code has been written using PyTorch >= 0.4. If you use any source codes or datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
 <pre>
-@article{wu2019global,
+@inproceedings{wu2019global,
   title={Global-to-local Memory Pointer Networks for Task-Oriented Dialogue},
   author={Wu, Chien-Sheng and Socher, Richard and Xiong, Caiming},
   booktitle={Proceedings of the International Conference on Learning Representations (ICLR)},
