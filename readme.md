@@ -5,8 +5,8 @@ This is the PyTorch implementation of the paper:
 **Global-to-local Memory Pointer Networks for Task-Oriented Dialogue**. [**Chien-Sheng Wu**](https://jasonwu0731.github.io/), [Richard Socher](https://www.socher.org/), [Caiming Xiong](http://www.stat.ucla.edu/~caiming/). ***ICLR 2019***. 
 [[PDF]](https://arxiv.org/abs/1901.04713)[[Open Reivew]](https://openreview.net/forum?id=ryxnHhRqFm)
 
-<img align="right" src="img/einstein-scroll.png" width="5%">
-<img align="right" src="img/salesforce-research.jpg" width="12%">
+<img align="right" src="img/einstein-scroll.png" width="8%">
+<img align="right" src="img/salesforce-research.jpg" width="15%">
 
 
 This code has been written using PyTorch >= 0.4. If you use any source codes or datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
