@@ -3,15 +3,15 @@
 
 This is the PyTorch implementation of the paper:
 **Global-to-local Memory Pointer Networks for Task-Oriented Dialogue**. [**Chien-Sheng Wu**](https://jasonwu0731.github.io/), [Richard Socher](https://www.socher.org/), [Caiming Xiong](http://www.stat.ucla.edu/~caiming/). ***ICLR 2019***. 
-[[PDF]](https://arxiv.org/abs/1901.04713). [[Open Reivew]](https://openreview.net/forum?id=ryxnHhRqFm)
+[[PDF]](https://arxiv.org/abs/1901.04713)[[Open Reivew]](https://openreview.net/forum?id=ryxnHhRqFm)
 
-<img align="right" src="img/einstein-scroll.png" width="5%">
-<img align="right" src="img/salesforce-research.jpg" width="12%">
+<img align="right" src="img/einstein-scroll.png" width="8%">
+<img align="right" src="img/salesforce-research.jpg" width="15%">
 
 
 This code has been written using PyTorch >= 0.4. If you use any source codes or datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
 <pre>
-@article{wu2019global,
+@inproceedings{wu2019global,
   title={Global-to-local Memory Pointer Networks for Task-Oriented Dialogue},
   author={Wu, Chien-Sheng and Socher, Richard and Xiong, Caiming},
   booktitle={Proceedings of the International Conference on Learning Representations (ICLR)},
@@ -30,18 +30,15 @@ End-to-end task-oriented dialogue is challenging since knowledge bases are usual
 <img src="img/new_block2.png" width="75%" />
 </p>
 
-## Import data
-Under the utils folder, we have the script to import and batch the data for each dataset. 
-
 ## Train a model for task-oriented dialog datasets
 We created `myTrain.py` to train models. You can run:
 GLMP bAbI dialogue t1-5:
 ```console
-❱❱❱ python3 myTrain.py -lr=0.001 -l=3 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=babi -t=1 
+❱❱❱ python3 myTrain.py -lr=0.001 -l=1 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=babi -t=1 
 ```
 or GLMP SMD
 ```console
-❱❱❱ python3 myTrain.py -lr=0.001 -l=3 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=kvr -t=
+❱❱❱ python3 myTrain.py -lr=0.001 -l=1 -hdd=128 -dr=0.2 -dec=GLMP -bsz=8 -ds=kvr -t=
 ```
 
 While training, the model with the best validation is saved. If you want to reuse a model add `-path=path_name_model` to the function call. The model is evaluated by using per responce accuracy, WER, F1 and BLEU.
@@ -58,6 +55,7 @@ or GLMP SMD
 ```
 
 ## Visualization Memory Access
+Memory attention visualization in the SMD navigation domain. Left column is the global memory pointer G, middle column is the memory pointer without global weighting, and the right column is the final memory pointer.
 
 <p align="center">
 <img src="img/VIZ.png" width="100%" />
@@ -65,7 +63,7 @@ or GLMP SMD
 
 ## Architecture
 <p align="center">
-<img src="img/new_enc.png" width="50%" />
+<img src="img/new_enc.png" width="40%" />
 <img src="img/new_dec.png" width="50%" />
 </p>
 
