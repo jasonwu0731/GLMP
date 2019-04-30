@@ -9,7 +9,7 @@ from utils.utils_general import *
 
 
 def read_langs(file_name, max_line = None):
-    logging.info(("Reading lines from {}".format(file_name)))
+    print(("Reading lines from {}".format(file_name)))
     data, context_arr, conv_arr, kb_arr = [], [], [], []
     max_resp_len = 0
     
@@ -157,12 +157,12 @@ def prepare_data_seq(task, batch_size=100):
     dev   = get_seq(pair_dev, lang, batch_size, False)
     test  = get_seq(pair_test, lang, batch_size, False)
     
-    logging.info("Read %s sentence pairs train" % len(pair_train))
-    logging.info("Read %s sentence pairs dev" % len(pair_dev))
-    logging.info("Read %s sentence pairs test" % len(pair_test))  
-    logging.info("Vocab_size: %s " % lang.n_words)
-    logging.info("Max. length of system response: %s " % max_resp_len)
-    logging.info("USE_CUDA={}".format(USE_CUDA))
+    print("Read %s sentence pairs train" % len(pair_train))
+    print("Read %s sentence pairs dev" % len(pair_dev))
+    print("Read %s sentence pairs test" % len(pair_test))  
+    print("Vocab_size: %s " % lang.n_words)
+    print("Max. length of system response: %s " % max_resp_len)
+    print("USE_CUDA={}".format(USE_CUDA))
     
     return train, dev, test, [], lang, max_resp_len
 

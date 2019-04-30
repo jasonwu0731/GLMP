@@ -38,7 +38,7 @@ model = globals()[args['decoder']](
     dropout=float(args['drop']))
 
 for epoch in range(200):
-    logging.info("Epoch:{}".format(epoch))  
+    print("Epoch:{}".format(epoch))  
     # Run the train function
     pbar = tqdm(enumerate(train),total=len(train))
     for i, data in pbar:
@@ -56,7 +56,7 @@ for epoch in range(200):
             cnt += 1
 
         if(cnt == 8 or (acc==1.0 and early_stop==None)): 
-            logging.info("Ran out of patient, early stop...")  
+            print("Ran out of patient, early stop...")  
             break 
 
 
