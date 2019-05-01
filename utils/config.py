@@ -26,7 +26,7 @@ parser.add_argument('-l','--layer', help='Layer Number', required=False)
 parser.add_argument('-lm','--limit', help='Word Limit', required=False,default=-10000)
 parser.add_argument('-path','--path', help='path of the file to load', required=False)
 parser.add_argument('-clip','--clip', help='gradient clipping', required=False, default=10)
-parser.add_argument('-tfr','--teacher_forcing_ratio', help='teacher_forcing_ratio', type=float, required=False, default=0.5)
+parser.add_argument('-tfr','--teacher_forcing_ratio', help='teacher_forcing_ratio', type=float, required=False, default=0.9)
 
 parser.add_argument('-sample','--sample', help='Number of Samples', required=False,default=None)
 parser.add_argument('-evalp','--evalp', help='evaluation period', required=False, default=1)
