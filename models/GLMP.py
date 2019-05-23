@@ -258,10 +258,10 @@ class GLMP(nn.Module):
 
         bleu_score = moses_multi_bleu(np.array(hyp), np.array(ref), lowercase=True)
         acc_score = acc / float(total)
-        F1_score = F1_pred / float(F1_count)
         print("ACC SCORE:\t"+str(acc_score))
 
         if args['dataset'] == 'kvr':
+            F1_score = F1_pred / float(F1_count)
             print("F1 SCORE:\t{}".format(F1_pred/float(F1_count)))
             print("\tCAL F1:\t{}".format(F1_cal_pred/float(F1_cal_count))) 
             print("\tWET F1:\t{}".format(F1_wet_pred/float(F1_wet_count))) 
